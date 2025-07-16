@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: TTT.Api/Dockerfile
-      container_name: ttt_api
+    container_name: ttt_api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       BOARD_SIZE: ${BOARD_SIZE}
@@ -25,7 +25,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PORT: ${POSTGRES_PORT}
     ports:
-      - '8000:8080'
+      - '8080:8080'
     depends_on:
       - postgres
 
