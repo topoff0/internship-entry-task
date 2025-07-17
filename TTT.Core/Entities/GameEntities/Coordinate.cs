@@ -1,4 +1,4 @@
-namespace TTT.Core.Entities
+namespace TTT.Core.Entities.GameEntities
 {
     public readonly struct Coordinate
     {

@@ -1,6 +1,7 @@
+using TTT.Core.Entities.UserEntities;
 using TTT.Core.Enums;
 
-namespace TTT.Core.Entities
+namespace TTT.Core.Entities.GameEntities
 {
     public class Game
     {
@@ -10,6 +11,8 @@ namespace TTT.Core.Entities
         public Sign[] Board { get; set; } = default!;
         public Sign CurrentPlayer { get; set; }
         public GameStatus Status { get; set; }
+
+        public ICollection<Player> Players { get; set; } = [];
 
         public Game(int boardSize, int winCondition)
         {

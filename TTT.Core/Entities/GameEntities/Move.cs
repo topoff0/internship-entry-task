@@ -1,6 +1,6 @@
 using TTT.Core.Enums;
 
-namespace TTT.Core.Entities
+namespace TTT.Core.Entities.GameEntities
 {
     public class Move
     {

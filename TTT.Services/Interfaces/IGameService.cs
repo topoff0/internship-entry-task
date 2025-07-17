@@ -1,4 +1,4 @@
-using TTT.Core.Entities;
+using TTT.Core.Entities.GameEntities;
 
 namespace TTT.Services.Interfaces
 {

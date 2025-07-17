@@ -1,4 +1,4 @@
-using TTT.Core.Entities;
+using TTT.Core.Entities.GameEntities;
 using TTT.Core.Enums;
 using TTT.Services.Interfaces;
 
