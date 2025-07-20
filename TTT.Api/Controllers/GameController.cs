@@ -104,7 +104,7 @@ namespace TTT.Api.Controllers
                     Status = game.Status.ToString(),
                     CurrentPlayerSign = game.CurrentPlayerSign.ToString(),
                     Board = [.. game.Board.Select(s => s.ToString())],
-                    MoveCount = game.MoveCount
+                    MoveNumber = game.MoveNumber
                 };
             }
     }

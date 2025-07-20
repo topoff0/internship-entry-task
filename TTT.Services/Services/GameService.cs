@@ -46,13 +46,13 @@ namespace TTT.Services.Services
             if (game.Board[index] != Sign.Empty)
                 throw new InvalidOperationException("Cell is occupied");
 
-            bool isSpecialTurn = game.MoveCount % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
+            bool isSpecialTurn = game.MoveNumber % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
             Sign sign = CalculateSpecialSign(move.PlayerSign, isSpecialTurn);
 
             game.SetCell(move.Position, sign);
             game.Status = CheckGameStatus(game);
             game.CurrentPlayerSign = NextPlayerSign(game);
-            game.MoveCount++;
+            game.MoveNumber++;
             await _gameRepository.UpdateAsync(game);
 
             return game;
