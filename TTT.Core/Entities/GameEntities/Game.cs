@@ -16,6 +16,7 @@ namespace TTT.Core.Entities.GameEntities
 
         public Guid PlayerXId { get; set; }
         public Guid PlayerOId { get; set; }
+        public int MoveCount { get; set; }
 
         public Game(int boardSize, int winCondition, Guid playerXId, Guid playerOId)
         {
@@ -28,6 +29,8 @@ namespace TTT.Core.Entities.GameEntities
 
             PlayerXId = playerXId;
             PlayerOId = playerOId;
+
+            MoveCount = 0;
         }
 
         public Sign GetCell(Coordinate coord)

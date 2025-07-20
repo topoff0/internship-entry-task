@@ -9,6 +9,8 @@ namespace TTT.Services.Services
     {
         private readonly IGameRepository _gameRepository;
         private readonly IPlayerRepository _playerRepository;
+        private static readonly Random _random = new();
+        private const int SPECIAL_TURN_CHANCE = 10;
 
         public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository)
         {
@@ -44,8 +46,12 @@ namespace TTT.Services.Services
             if (game.Board[index] != Sign.Empty)
                 throw new InvalidOperationException("Cell is occupied");
 
-            game.SetCell(move.Position, move.PlayerSign);
+            bool isSpecialTurn = game.MoveCount % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
+            Sign sign = CalculateSign(move.PlayerSign, isSpecialTurn);
+
+            game.SetCell(move.Position, sign);
             game.Status = CheckGameStatus(game);
+            game.MoveCount++;
             await _gameRepository.UpdateAsync(game);
 
             return game;
@@ -104,7 +110,7 @@ namespace TTT.Services.Services
 
             return true;
         }
-        
+
         private async Task LinkGameToPlayersAsync(Game game, Guid playerXId, Guid playerOId)
         {
             var playerX = await _playerRepository.GetPlayerWithGamesAsync(playerXId);
@@ -114,6 +120,16 @@ namespace TTT.Services.Services
             playerO.Games.Add(game);
 
             await _playerRepository.SaveChangesAsync();
+        }
+
+        private static Sign CalculateSign(Sign currentPlayerSign, bool isSpecialTurn)
+        {
+            if (currentPlayerSign == Sign.X)
+            {
+                return isSpecialTurn ? Sign.O : Sign.X;
+            }
+            // Current player: Sign.O
+            return isSpecialTurn ? Sign.X : Sign.O;
         }
     }
 }
