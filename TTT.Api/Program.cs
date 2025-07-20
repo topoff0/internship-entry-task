@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using TTT.Api.Configuration;
 using TTT.Data;
+using TTT.Data.Development;
 using TTT.Data.Repositories;
 using TTT.Data.Repositories.Interfaces;
+using TTT.Services.Interfaces;
+using TTT.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IGameService, GameService>();
 
 builder.Services.AddControllers();
 
@@ -42,6 +46,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbInitializer.InitializeAsync(dbContext);
+}
 
 if (app.Environment.IsDevelopment())
 {

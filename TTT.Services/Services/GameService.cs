@@ -47,10 +47,11 @@ namespace TTT.Services.Services
                 throw new InvalidOperationException("Cell is occupied");
 
             bool isSpecialTurn = game.MoveCount % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
-            Sign sign = CalculateSign(move.PlayerSign, isSpecialTurn);
+            Sign sign = CalculateSpecialSign(move.PlayerSign, isSpecialTurn);
 
             game.SetCell(move.Position, sign);
             game.Status = CheckGameStatus(game);
+            game.CurrentPlayerSign = NextPlayerSign(game);
             game.MoveCount++;
             await _gameRepository.UpdateAsync(game);
 
@@ -122,7 +123,7 @@ namespace TTT.Services.Services
             await _playerRepository.SaveChangesAsync();
         }
 
-        private static Sign CalculateSign(Sign currentPlayerSign, bool isSpecialTurn)
+        private static Sign CalculateSpecialSign(Sign currentPlayerSign, bool isSpecialTurn)
         {
             if (currentPlayerSign == Sign.X)
             {
@@ -130,6 +131,14 @@ namespace TTT.Services.Services
             }
             // Current player: Sign.O
             return isSpecialTurn ? Sign.X : Sign.O;
+        }
+
+        private static Sign NextPlayerSign(Game game)
+        {
+            if (game.Status == GameStatus.InProgress || game.Status == GameStatus.Draw)
+                return Sign.Empty;
+
+            return game.CurrentPlayerSign == Sign.X ? Sign.O : Sign.X;
         }
     }
 }
