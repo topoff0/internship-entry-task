@@ -44,9 +44,12 @@ namespace TTT.Api.Controllers
                 };
                 return CreatedAtAction(nameof(GetGame), new { id = game.Id }, response);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return Problem(title: "Players not found", detail: ex.Message, statusCode: 404);
+            }
             catch (Exception ex)
             {
-                // TODO handle all exceptions
                 return Problem(title: "Failed to create game", detail: ex.Message, statusCode: 500);
             }
         }
@@ -89,10 +92,14 @@ namespace TTT.Api.Controllers
             {
                 var game = await _gameService.GetGameAsync(gameId);
                 return Ok(MapGameState(game));
-            }// TODO: handle all exceptions
-            catch (Exception ex)
+            }
+            catch (KeyNotFoundException ex)
             {
                 return Problem(title: "Game not found", detail: ex.Message, statusCode: 404);
+            }
+            catch (Exception ex)
+            {
+                return Problem(title: "Server error", detail: ex.Message, statusCode: 500);
             }
         }
         

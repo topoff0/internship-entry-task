@@ -1,4 +1,3 @@
-using TTT.Core.Entities.UserEntities;
 using TTT.Core.Enums;
 
 namespace TTT.Core.Entities.GameEntities
