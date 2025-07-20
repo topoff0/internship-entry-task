@@ -6,7 +6,7 @@ namespace TTT.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        protected ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
         public DbSet<Game> Games { get; set; }
@@ -15,10 +15,6 @@ namespace TTT.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Game>()
-                .HasMany(g => g.Players)
-                .WithMany(p => p.Games);
         }
     }
 }

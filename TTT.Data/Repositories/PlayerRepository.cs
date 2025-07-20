@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TTT.Core.Entities.GameEntities;
 using TTT.Core.Entities.UserEntities;
 using TTT.Data.Repositories.Interfaces;
 
@@ -33,6 +34,11 @@ namespace TTT.Data.Repositories
             var user = await _dbContext.Players.FirstOrDefaultAsync(p => p.Id == userId);
 
             return user ?? throw new KeyNotFoundException($"User with ID: {userId} not found");
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Player player)

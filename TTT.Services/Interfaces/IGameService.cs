@@ -4,8 +4,8 @@ namespace TTT.Services.Interfaces
 {
     public interface IGameService
     {
-        Game CreateGame(int boardSize, int winCondition);
-        Game MakeMove(Move move);
-        Game GetGame(Guid gameId);
+        public Task<Game> CreateGameAsync(int boardSize, int winCondition, Guid playerXId, Guid playerOId);
+        public Task<Game> MakeMoveAsync(Move move);
+        public Task<Game> GetGameAsync(Guid gameId);
     }
 }

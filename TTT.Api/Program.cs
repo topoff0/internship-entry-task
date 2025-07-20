@@ -1,4 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using TTT.Api.Configuration;
+using TTT.Data;
+using TTT.Data.Repositories;
+using TTT.Data.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +22,36 @@ builder.Services.Configure<DatabaseSettings>(options =>
     options.PostgresPort = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
 });
 
+var user = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
+var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "secret";
+var db = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "ttt_db";
+var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
+
+var connectionString = $"Host={host};Port={port};Username={user};Password={password};Database={db}";
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+
 builder.Services.AddControllers();
 
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "TTT API v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
 
 app.UseHttpsRedirection();
 

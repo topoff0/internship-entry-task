@@ -1,47 +1,61 @@
 using TTT.Core.Entities.GameEntities;
 using TTT.Core.Enums;
+using TTT.Data.Repositories.Interfaces;
 using TTT.Services.Interfaces;
 
 namespace TTT.Services.Services
 {
     public class GameService : IGameService
     {
-        private readonly Dictionary<Guid, Game> _games = [];
+        private readonly IGameRepository _gameRepository;
+        private readonly IPlayerRepository _playerRepository;
 
-        public Game CreateGame(int boardSize, int winCondition)
+        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository)
         {
-            var game = new Game(boardSize, winCondition);
-            _games[game.Id] = game;
+            _gameRepository = gameRepository;
+            _playerRepository = playerRepository;
+        }
+        public async Task<Game> CreateGameAsync(int boardSize, int winCondition, Guid playerXId, Guid playerOId)
+        {
+            var game = new Game(boardSize, winCondition, playerXId, playerOId);
+            await _gameRepository.CreateAsync(game);
+
+            await LinkGameToPlayersAsync(game, playerXId, playerOId);
+
             return game;
         }
 
-        public Game MakeMove(Move move)
+        public async Task<Game> MakeMoveAsync(Move move)
         {
-            if (!_games.TryGetValue(move.GameId, out var game))
-                throw new KeyNotFoundException("Game not found");
+            var game = await _gameRepository.GetGameAsync(move.GameId);
 
-            var index = move.Position.ToIndex(game.BoardSize);
+            if (game.Status != GameStatus.InProgress)
+                throw new InvalidOperationException("Game has already ended.");
 
-            if (game.Board[index] != Sign.Empty)
-                throw new InvalidOperationException("Cell is occupied");
-            if (game.CurrentPlayer != move.Player)
+            if (game.CurrentPlayerSign != move.PlayerSign)
                 throw new InvalidOperationException("Not this player's turn");
 
-            game.SetCell(move.Position, move.Player);
+            if (move.PlayerSign == Sign.X && move.PlayerId != game.PlayerXId
+                || move.PlayerSign == Sign.O && move.PlayerId != game.PlayerOId)
+                throw new UnauthorizedAccessException("Player is not assigned to this sign in the game");
 
+
+            var index = move.Position.ToIndex(game.BoardSize);
+            if (game.Board[index] != Sign.Empty)
+                throw new InvalidOperationException("Cell is occupied");
+
+            game.SetCell(move.Position, move.PlayerSign);
             game.Status = CheckGameStatus(game);
+            await _gameRepository.UpdateAsync(game);
 
             return game;
         }
 
-        public Game GetGame(Guid gameId)
+        public async Task<Game> GetGameAsync(Guid gameId)
         {
-            if (!_games.TryGetValue(gameId, out var game))
-                throw new KeyNotFoundException("Game not found");
-
+            var game = await _gameRepository.GetGameAsync(gameId);
             return game;
         }
-
 
         private static GameStatus CheckGameStatus(Game game)
         {
@@ -89,6 +103,17 @@ namespace TTT.Services.Services
             }
 
             return true;
+        }
+        
+        private async Task LinkGameToPlayersAsync(Game game, Guid playerXId, Guid playerOId)
+        {
+            var playerX = await _playerRepository.GetPlayerWithGamesAsync(playerXId);
+            var playerO = await _playerRepository.GetPlayerWithGamesAsync(playerOId);
+
+            playerX.Games.Add(game);
+            playerO.Games.Add(game);
+
+            await _playerRepository.SaveChangesAsync();
         }
     }
 }

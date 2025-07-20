@@ -6,22 +6,28 @@ namespace TTT.Core.Entities.GameEntities
     public class Game
     {
         public Guid Id { get; set; }
+        
         public int BoardSize { get; set; }
         public int WinCondition { get; set; }
         public Sign[] Board { get; set; } = default!;
-        public Sign CurrentPlayer { get; set; }
+
+        public Sign CurrentPlayerSign { get; set; }  
         public GameStatus Status { get; set; }
 
-        public ICollection<Player> Players { get; set; } = [];
+        public Guid PlayerXId { get; set; }
+        public Guid PlayerOId { get; set; }
 
-        public Game(int boardSize, int winCondition)
+        public Game(int boardSize, int winCondition, Guid playerXId, Guid playerOId)
         {
             Id = Guid.NewGuid();
             BoardSize = boardSize;
             WinCondition = winCondition;
             Board = [.. Enumerable.Repeat(Sign.Empty, BoardSize * BoardSize)];
-            CurrentPlayer = Sign.X;
+            CurrentPlayerSign = Sign.X;
             Status = GameStatus.InProgress;
+
+            PlayerXId = playerXId;
+            PlayerOId = playerOId;
         }
 
         public Sign GetCell(Coordinate coord)

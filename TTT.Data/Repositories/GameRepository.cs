@@ -19,11 +19,9 @@ namespace TTT.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Game> GetAsync(Guid gameId)
+        public async Task<Game> GetGameAsync(Guid gameId)
         {
-            var game = await _dbContext.Games
-                                       .Include(g => g.Players)
-                                       .FirstOrDefaultAsync(g => g.Id == gameId);
+            var game = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id == gameId);
             return game ?? throw new KeyNotFoundException($"Game with ID {gameId} not found");
         }
 
