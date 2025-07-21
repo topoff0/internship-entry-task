@@ -1,4 +1,4 @@
-namespace TTT.Api.DTO.Game
+namespace TTT.Api.DTO.GameDtos
 {
     public class PositionDto
     {

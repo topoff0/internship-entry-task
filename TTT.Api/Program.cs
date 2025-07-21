@@ -39,6 +39,8 @@ builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<IGameService, GameService>();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddControllers();
 
 // Swagger

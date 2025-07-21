@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TTT.Api.Configuration;
-using TTT.Api.DTO.Game;
+using TTT.Api.DTO.GameDtos;
 using TTT.Core.Entities.GameEntities;
 using TTT.Core.Enums;
 using TTT.Services.Interfaces;
@@ -55,7 +55,7 @@ namespace TTT.Api.Controllers
         }
 
         [HttpPost("{gameId:guid}/moves")]
-        public async Task<ActionResult<GameStateResponse>> MakeMove(Guid gameId, [FromBody] MakeMoveRequest request)
+        public async Task<ActionResult<GameStateResponse>> MakeMove(Guid gameId, [FromBody] MoveRequest request)
         {
             try
             {
@@ -67,9 +67,12 @@ namespace TTT.Api.Controllers
                     Position = new Coordinate(request.Position.Row, request.Position.Column)
                 };
 
-                var game = await _gameService.MakeMoveAsync(move);
+                var result = await _gameService.MakeMoveAsync(move);
 
-                return Ok(MapGameState(game));
+                var response = MapGameState(result.Game);
+                Response.Headers.ETag = $"\"{result.ETag}\"";
+
+                return Ok(response);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -102,17 +105,17 @@ namespace TTT.Api.Controllers
                 return Problem(title: "Server error", detail: ex.Message, statusCode: 500);
             }
         }
-        
-            private static GameStateResponse MapGameState(Game game)
+
+        private static GameStateResponse MapGameState(Game game)
+        {
+            return new GameStateResponse
             {
-                return new GameStateResponse
-                {
-                    GameId = game.Id,
-                    Status = game.Status.ToString(),
-                    CurrentPlayerSign = game.CurrentPlayerSign.ToString(),
-                    Board = [.. game.Board.Select(s => s.ToString())],
-                    MoveNumber = game.MoveNumber
-                };
-            }
+                GameId = game.Id,
+                Status = game.Status.ToString(),
+                CurrentPlayerSign = game.CurrentPlayerSign.ToString(),
+                Board = [.. game.Board.Select(s => s.ToString())],
+                MoveNumber = game.MoveNumber
+            };
+        }
     }
 }

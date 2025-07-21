@@ -1,6 +1,6 @@
-namespace TTT.Api.DTO.Game
+namespace TTT.Api.DTO.GameDtos
 {
-    public class MakeMoveRequest
+    public class MoveRequest
     {
         public Guid PlayerId { get; set; }
         public string PlayerSign { get; set; } = default!;

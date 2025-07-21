@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Memory;
 using TTT.Core.Entities.GameEntities;
 using TTT.Core.Enums;
 using TTT.Data.Repositories.Interfaces;
@@ -9,13 +11,18 @@ namespace TTT.Services.Services
     {
         private readonly IGameRepository _gameRepository;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IMemoryCache _cache;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _moveLocks = new();
         private static readonly Random _random = new();
         private const int SPECIAL_TURN_CHANCE = 10;
 
-        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository)
+        public GameService(IGameRepository gameRepository,
+                           IPlayerRepository playerRepository,
+                           IMemoryCache cache)
         {
             _gameRepository = gameRepository;
             _playerRepository = playerRepository;
+            _cache = cache;
         }
         public async Task<Game> CreateGameAsync(int boardSize, int winCondition, Guid playerXId, Guid playerOId)
         {
@@ -27,35 +34,63 @@ namespace TTT.Services.Services
             return game;
         }
 
-        public async Task<Game> MakeMoveAsync(Move move)
+        public async Task<CachedMoveResult> MakeMoveAsync(Move move)
         {
-            var game = await _gameRepository.GetGameAsync(move.GameId);
+            string cacheKey = GenerateCacheKey(move);
 
-            if (game.Status != GameStatus.InProgress)
-                throw new InvalidOperationException("Game has already ended.");
+            if (_cache.TryGetValue<CachedMoveResult>(cacheKey, out var cached) && cached is not null)
+            {
+                return cached;
+            }
 
-            if (game.CurrentPlayerSign != move.PlayerSign)
-                throw new InvalidOperationException("Not this player's turn");
+            var semaphore = _moveLocks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
+            await semaphore.WaitAsync();
+            try
+            {
+                if (_cache.TryGetValue<CachedMoveResult>(cacheKey, out cached) && cached is not null)
+                {
+                    return cached;
+                }
 
-            if (move.PlayerSign == Sign.X && move.PlayerId != game.PlayerXId
-                || move.PlayerSign == Sign.O && move.PlayerId != game.PlayerOId)
-                throw new UnauthorizedAccessException("Player is not assigned to this sign in the game");
+                var game = await _gameRepository.GetGameAsync(move.GameId);
 
+                if (game.Status != GameStatus.InProgress)
+                    throw new InvalidOperationException("Game has already ended.");
 
-            var index = move.Position.ToIndex(game.BoardSize);
-            if (game.Board[index] != Sign.Empty)
-                throw new InvalidOperationException("Cell is occupied");
+                if (game.CurrentPlayerSign != move.PlayerSign)
+                    throw new InvalidOperationException("Not this player's turn");
 
-            bool isSpecialTurn = game.MoveNumber % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
-            Sign sign = CalculateSpecialSign(move.PlayerSign, isSpecialTurn);
+                if (move.PlayerSign == Sign.X && move.PlayerId != game.PlayerXId
+                    || move.PlayerSign == Sign.O && move.PlayerId != game.PlayerOId)
+                    throw new UnauthorizedAccessException("Player is not assigned to this sign in the game");
 
-            game.SetCell(move.Position, sign);
-            game.Status = CheckGameStatus(game);
-            game.CurrentPlayerSign = NextPlayerSign(game);
-            game.MoveNumber++;
-            await _gameRepository.UpdateAsync(game);
+                var index = move.Position.ToIndex(game.BoardSize);
+                if (game.Board[index] != Sign.Empty)
+                    throw new InvalidOperationException("Cell is occupied");
 
-            return game;
+                bool isSpecialTurn = game.MoveNumber % 3 == 0 && _random.Next(0, 100) < SPECIAL_TURN_CHANCE;
+                Sign sign = CalculateSpecialSign(move.PlayerSign, isSpecialTurn);
+
+                game.SetCell(move.Position, sign);
+                game.Status = CheckGameStatus(game);
+                game.CurrentPlayerSign = NextPlayerSign(game);
+                game.MoveNumber++;
+                await _gameRepository.UpdateAsync(game);
+
+                var result = new CachedMoveResult
+                {
+                    Game = game,
+                    ETag = Guid.NewGuid().ToString()
+                };
+
+                _cache.Set(cacheKey, result, TimeSpan.FromMinutes(3));
+
+                return result;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
 
         public async Task<Game> GetGameAsync(Guid gameId)
@@ -139,6 +174,11 @@ namespace TTT.Services.Services
                 return Sign.Empty;
 
             return game.CurrentPlayerSign == Sign.X ? Sign.O : Sign.X;
+        }
+
+        private static string GenerateCacheKey(Move move)
+        {
+            return $"move:{move.GameId}:{move.PlayerId}:{move.Position}";
         }
     }
 }
