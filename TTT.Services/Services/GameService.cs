@@ -54,8 +54,12 @@ namespace TTT.Services.Services
 
                 var game = await _gameRepository.GetGameAsync(move.GameId);
 
+                if (move.Position.X < 0 || move.Position.X >= game.BoardSize
+                    || move.Position.Y < 0 || move.Position.Y >= game.BoardSize)
+                    throw new InvalidOperationException("Invalid move");
+
                 if (game.Status != GameStatus.InProgress)
-                    throw new InvalidOperationException("Game has already ended.");
+                        throw new InvalidOperationException("Game has already ended.");
 
                 if (game.CurrentPlayerSign != move.PlayerSign)
                     throw new InvalidOperationException("Not this player's turn");

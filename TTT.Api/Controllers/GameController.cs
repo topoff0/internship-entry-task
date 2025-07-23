@@ -42,11 +42,11 @@ namespace TTT.Api.Controllers
                     PlayerOId = request.PlayerOId,
                     Status = game.Status.ToString()
                 };
-                return CreatedAtAction(nameof(GetGame), new { id = game.Id }, response);
+                return CreatedAtAction(nameof(GetGame), new { gameId = game.Id }, response);
             }
             catch (KeyNotFoundException ex)
             {
-                return Problem(title: "Players not found", detail: ex.Message, statusCode: 404);
+                return Problem(title: "Player not found", detail: ex.Message, statusCode: 404);
             }
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace TTT.Api.Controllers
             }
         }
 
-        [HttpGet("{gameId:guid}/")]
+        [HttpGet("{gameId:guid}")]
         public async Task<ActionResult<GameStateResponse>> GetGame(Guid gameId)
         {
             try

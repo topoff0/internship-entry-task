@@ -16,5 +16,5 @@
     <ProjectReference Include="..\TTT.Core\TTT.Core.csproj" />
     <ProjectReference Include="..\TTT.Services\TTT.Services.csproj" />
   </ItemGroup>
-
+  
 </Project>
