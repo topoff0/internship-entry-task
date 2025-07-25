@@ -36,8 +36,8 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          dotnet test TTT.Tests/TTT.Tests.Unit.csproj --logger "console;verbosity=detailed"
+          dotnet test TTT.Tests/TTT.Tests.Unit/TTT.Tests.Unit.csproj --logger "console;verbosity=detailed"
 
       - name: Run Integration Tests
         run: |
-          dotnet test TTT.Tests/TTT.Tests.Integration.csproj --logger "console;verbosity=detailed"
+          dotnet test TTT.Tests/TTT.Tests.Integration/TTT.Tests.Integration.csproj --logger "console;verbosity=detailed"
