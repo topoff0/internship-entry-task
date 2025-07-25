@@ -26,13 +26,13 @@ jobs:
           dotnet-version: '9.0'
       - name: Restore dependencies
         run: |
-          dotnet restore TTT.Tests/TTT.Tests.Unit.csproj
-          dotnet restore TTT.Tests/TTT.Tests.Integration.csproj
+          dotnet restore TTT.Tests/TTT.Tests.Unit/TTT.Tests.Unit.csproj
+          dotnet restore TTT.Tests/TTT.Tests.Integration/TTT.Tests.Integration.csproj
 
       - name: Build the project
         run: |
-          dotnet build TTT.Tests/TTT.Tests.Unit.csproj -c Release
-          dotnet build TTT.Tests/TTT.Tests.Integration.csproj -c Release
+          dotnet build TTT.Tests/TTT.Tests.Unit/TTT.Tests.Unit.csproj -c Release
+          dotnet build TTT.Tests/TTT.Tests.Integration/TTT.Tests.Integration.csproj -c Release
 
       - name: Run Unit Tests
         run: |
