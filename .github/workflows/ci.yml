@@ -1,0 +1,43 @@
+name: .NET Test CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - release
+      - dev
+    pull_request:
+      branches:
+        - main
+        - release
+        - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0'
+      - name: Restore dependencies
+        run: |
+          dotnet restore TTT.Tests/TTT.Tests.Unit.csproj
+          dotnet restore TTT.Tests/TTT.Tests.Integration.csproj
+
+      - name: Build the project
+        run: |
+          dotnet build TTT.Tests/TTT.Tests.Unit.csproj -c Release
+          dotnet build TTT.Tests/TTT.Tests.Integration.csproj -c Release
+
+      - name: Run Unit Tests
+        run: |
+          dotnet test TTT.Tests/TTT.Tests.Unit.csproj --logger "console;verbosity=detailed"
+
+      - name: Run Integration Tests
+        run: |
+          dotnet test TTT.Tests/TTT.Tests.Integration.csproj --logger "console;verbosity=detailed"

@@ -11,9 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Data", "TTT.Data\TTT.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Services", "TTT.Services\TTT.Services.csproj", "{8381BEFB-1412-428B-90FC-E9360811D8CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Tests.Unit", "TTT.Tests.Unit\TTT.Tests.Unit.csproj", "{535EFE1E-1548-42C9-964F-706F8188E18A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TTT.Tests", "TTT.Tests", "{9594F7DF-EE86-4685-8F80-E237E187C48B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Tests.Integration", "TTT.Tests.Integration\TTT.Tests.Integration.csproj", "{39E46431-54B9-48F4-AF6A-9EBB040CCC99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Tests.Unit", "TTT.Tests\TTT.Tests.Unit\TTT.Tests.Unit.csproj", "{64D12BBC-7CD1-455D-9940-05FD7F009CA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTT.Tests.Integration", "TTT.Tests\TTT.Tests.Integration\TTT.Tests.Integration.csproj", "{560AC949-FB3D-418F-88C1-3640D0AB9784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,16 +39,20 @@ Global
 		{8381BEFB-1412-428B-90FC-E9360811D8CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8381BEFB-1412-428B-90FC-E9360811D8CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8381BEFB-1412-428B-90FC-E9360811D8CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{535EFE1E-1548-42C9-964F-706F8188E18A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{535EFE1E-1548-42C9-964F-706F8188E18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{535EFE1E-1548-42C9-964F-706F8188E18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{535EFE1E-1548-42C9-964F-706F8188E18A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39E46431-54B9-48F4-AF6A-9EBB040CCC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39E46431-54B9-48F4-AF6A-9EBB040CCC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39E46431-54B9-48F4-AF6A-9EBB040CCC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39E46431-54B9-48F4-AF6A-9EBB040CCC99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64D12BBC-7CD1-455D-9940-05FD7F009CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64D12BBC-7CD1-455D-9940-05FD7F009CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64D12BBC-7CD1-455D-9940-05FD7F009CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64D12BBC-7CD1-455D-9940-05FD7F009CA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560AC949-FB3D-418F-88C1-3640D0AB9784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560AC949-FB3D-418F-88C1-3640D0AB9784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560AC949-FB3D-418F-88C1-3640D0AB9784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560AC949-FB3D-418F-88C1-3640D0AB9784}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{64D12BBC-7CD1-455D-9940-05FD7F009CA9} = {9594F7DF-EE86-4685-8F80-E237E187C48B}
+		{560AC949-FB3D-418F-88C1-3640D0AB9784} = {9594F7DF-EE86-4685-8F80-E237E187C48B}
 	EndGlobalSection
 EndGlobal
