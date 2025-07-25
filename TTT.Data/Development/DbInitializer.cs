@@ -13,10 +13,10 @@ namespace TTT.Data.Development
             if (!await db.Players.AnyAsync())
             {
 
-                var jsonString = await File.ReadAllTextAsync("TTT.Data/Development/Data/SeedPlayers.json");
+                var basePath = AppContext.BaseDirectory; // this points to the test assembly output folder
+                var seedFilePath = Path.Combine(basePath, "TTT.Data", "Development", "Data", "SeedPlayers.json");
 
-                var players = JsonSerializer.Deserialize<List<PlayerSeedModel>>(jsonString);
-
+                var players = JsonSerializer.Deserialize<List<PlayerSeedModel>>(seedFilePath);
                 
                 if (players != null)
                 {
