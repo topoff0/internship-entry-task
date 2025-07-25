@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TTT.Core.Entities.UserEntities;
+using System.Text.Json;
 
 namespace TTT.Data.Development
 {
@@ -11,27 +12,36 @@ namespace TTT.Data.Development
 
             if (!await db.Players.AnyAsync())
             {
-                db.Players.AddRange(
-                    new Player
+
+                var jsonString = await File.ReadAllTextAsync("TTT.Data/Development/Data/SeedPlayers.json");
+
+                var players = JsonSerializer.Deserialize<List<PlayerSeedModel>>(jsonString);
+
+                
+                if (players != null)
+                {
+                    db.Players.AddRange(players.Select(p => new Player
                     {
-                        Id = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-                        Name = "Test User X",
-                        Email = "x@example.com",
-                        PasswordHash = "test-password-hash-x",
+                        Id = Guid.Parse(p.Id),
+                        Name = p.Name,
+                        Email = p.Email,
+                        PasswordHash = p.PasswordHash,
                         CreatedAt = DateTime.UtcNow
-                    },
-                    new Player
-                    {
-                        Id = Guid.Parse("6dc8bb68-5a76-4e2b-8a53-dbb7f7d53da0"),
-                        Name = "Test User O",
-                        Email = "o@example.com",
-                        PasswordHash = "test-password-hash-o",
-                        CreatedAt = DateTime.UtcNow
-                    }
-                );
+                    }));
+                    await db.SaveChangesAsync();
+                }
+
                 await db.SaveChangesAsync();
             }
 
+        }
+
+        private class PlayerSeedModel
+        {
+            public string Id { get; set; } = null!;
+            public string Name { get; set; } = null!;
+            public string Email { get; set; } = null!;
+            public string PasswordHash { get; set; } = null!;
         }
     }
 }

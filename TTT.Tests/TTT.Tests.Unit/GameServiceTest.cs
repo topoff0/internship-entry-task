@@ -79,7 +79,7 @@ namespace TTT.Tests.Unit
             Assert.Same(firstResult.Game, secondResult.Game);
         }
 
-                [Fact]
+        [Fact]
         public async Task MakeMoveAsync_Idempotency_ReturnsSameResultOnRaceCondition()
         {
             var game = CreateTestGame();

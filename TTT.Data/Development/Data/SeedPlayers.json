@@ -1,0 +1,14 @@
+[
+  {
+    "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "Name": "Test User X",
+    "Email": "x@example.com",
+    "PasswordHash": "test-password-hash-x"
+  },
+  {
+    "Id": "6dc8bb68-5a76-4e2b-8a53-dbb7f7d53da0",
+    "Name": "Test User O",
+    "Email": "o@example.com",
+    "PasswordHash": "test-password-hash-o"
+  }
+]
