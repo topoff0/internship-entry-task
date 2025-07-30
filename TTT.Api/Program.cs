@@ -9,6 +9,8 @@ using TTT.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+DotNetEnv.Env.Load();
+
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.Configure<GameSettings>(options =>
