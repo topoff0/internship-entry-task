@@ -9,7 +9,7 @@ using TTT.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load();
+DotNetEnv.Env.Load("../.env");
 
 builder.Configuration.AddEnvironmentVariables();
 
